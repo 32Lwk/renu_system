@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{ title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/base.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-inner">
+        <h1 class="logo">開発用テストログイン</h1>
+      </div>
+    </header>
+    <main class="main">
+      {% if error %}
+      <div class="alert alert-error">
+        {{ error }}
+      </div>
+      {% endif %}
+      <section class="card">
+        <h2>テストメンバーを選択</h2>
+        <p>開発専用: 下のリストからメンバーを選択してログインします。</p>
+        <form method="post">
+          <label for="member_id">メンバー</label><br />
+          <select
+            id="member_id"
+            name="member_id"
+            required
+            style="margin-top: 0.25rem; margin-bottom: 1rem; width: 100%; padding: 0.5rem"
+          >
+            {% for m in members %}
+            <option value="{{ m.id }}">
+              {{ m.name }}
+              （学年: {{ m.grade }} /
+              ロール: {{ m.roles or 'なし' }} /
+              チーム: {{ m.teams or 'なし' }} /
+              ID: {{ m.id }}）
+            </option>
+            {% endfor %}
+          </select>
+          <button class="button primary" type="submit">このメンバーでログイン</button>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>
+

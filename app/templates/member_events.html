@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>自分の出勤予定 | ReNU</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/base.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-inner">
+        <h1 class="logo">自分の出勤予定</h1>
+      </div>
+    </header>
+    <main class="main">
+      <section class="card">
+        <h2>出勤イベント一覧（開発用モック）</h2>
+        {% if events %}
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem">
+          <thead>
+            <tr>
+              <th style="text-align: left; padding: 0.4rem; border-bottom: 1px solid #1f2937">
+                日付
+              </th>
+              <th style="text-align: left; padding: 0.4rem; border-bottom: 1px solid #1f2937">
+                時間
+              </th>
+              <th style="text-align: left; padding: 0.4rem; border-bottom: 1px solid #1f2937">
+                イベント名
+              </th>
+              <th style="text-align: left; padding: 0.4rem; border-bottom: 1px solid #1f2937">
+                状態 / 変更
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for e in events %}
+            <tr>
+              <td style="padding: 0.4rem; border-bottom: 1px solid #111827">
+                {{ e.date }}
+              </td>
+              <td style="padding: 0.4rem; border-bottom: 1px solid #111827">
+                {{ e.start_time }}〜{{ e.end_time }}
+              </td>
+              <td style="padding: 0.4rem; border-bottom: 1px solid #111827">
+                {{ e.event_name }}
+              </td>
+              <td style="padding: 0.4rem; border-bottom: 1px solid #111827">
+                <form
+                  method="post"
+                  action="/my/attendances/{{ e.attendance_id }}/change"
+                >
+                  <select name="status_value">
+                    <option value="planned" {% if e.status == 'planned' %}selected{% endif %}>
+                      出勤予定
+                    </option>
+                    <option value="absent" {% if e.status == 'absent' %}selected{% endif %}>
+                      欠席
+                    </option>
+                    <option value="late" {% if e.status == 'late' %}selected{% endif %}>
+                      遅刻
+                    </option>
+                    <option
+                      value="leave_early"
+                      {% if e.status == 'leave_early' %}selected{% endif %}
+                    >
+                      早退
+                    </option>
+                  </select>
+                  <input
+                    type="text"
+                    name="reason"
+                    value="{{ e.note or '' }}"
+                    placeholder="理由"
+                    style="margin-left: 0.25rem; width: 40%"
+                  />
+                  <button class="button primary" type="submit" style="margin-left: 0.25rem">
+                    申請
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p>出勤予定のイベントがまだありません。</p>
+        {% endif %}
+      </section>
+    </main>
+  </body>
+</html>
+

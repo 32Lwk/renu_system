@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>自分の繁忙期希望一覧 | ReNU</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/base.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-inner">
+        <h1 class="logo">自分の繁忙期希望一覧</h1>
+      </div>
+    </header>
+    <main class="main">
+      <section class="card">
+        <h2>登録済みの希望</h2>
+        {% if preferences %}
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem">
+          <thead>
+            <tr>
+              <th style="text-align: left; padding: 0.4rem; border-bottom: 1px solid #1f2937">
+                イベントID
+              </th>
+              <th style="text-align: left; padding: 0.4rem; border-bottom: 1px solid #1f2937">
+                希望役割
+              </th>
+              <th style="text-align: left; padding: 0.4rem; border-bottom: 1px solid #1f2937">
+                優先度
+              </th>
+              <th style="text-align: left; padding: 0.4rem; border-bottom: 1px solid #1f2937">
+                上限シフト数
+              </th>
+              <th style="text-align: left; padding: 0.4rem; border-bottom: 1px solid #1f2937">
+                備考
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in preferences %}
+            <tr>
+              <td style="padding: 0.4rem; border-bottom: 1px solid #111827">
+                {{ p.event_id }}
+              </td>
+              <td style="padding: 0.4rem; border-bottom: 1px solid #111827">
+                {{ p.preferred_role }}
+              </td>
+              <td style="padding: 0.4rem; border-bottom: 1px solid #111827">
+                {{ p.priority }}
+              </td>
+              <td style="padding: 0.4rem; border-bottom: 1px solid #111827">
+                {{ p.max_shifts }}
+              </td>
+              <td style="padding: 0.4rem; border-bottom: 1px solid #111827">
+                {{ p.note }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p>まだ繁忙期の希望は登録されていません。</p>
+        {% endif %}
+      </section>
+    </main>
+  </body>
+</html>
+

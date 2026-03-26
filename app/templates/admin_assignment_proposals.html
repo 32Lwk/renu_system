@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>割り当て提案の承認 | ReNU</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/base.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-inner">
+        <h1 class="logo">Leader からの割り当て提案</h1>
+        <a class="button secondary" href="/admin">ダッシュボードへ</a>
+      </div>
+    </header>
+    <main class="main">
+      <section class="card">
+        {% if not summaries %}
+        <p>承認待ちの提案はありません。</p>
+        {% else %}
+        <table class="table">
+          <thead>
+            <tr>
+              <th>バッチ</th>
+              <th>件数</th>
+              <th>提案者 (member_id)</th>
+              <th>例: イベント</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in summaries %}
+            <tr>
+              <td><code>{{ s.batch_id }}</code></td>
+              <td>{{ s.count }}</td>
+              <td>{{ s.leader_member_id or "-" }}</td>
+              <td>{{ s.sample_event }}</td>
+              <td><a href="/admin/assignment/proposals/{{ s.batch_id }}">詳細</a></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+      </section>
+    </main>
+  </body>
+</html>

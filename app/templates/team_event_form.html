@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{% if mode == 'new' %}イベント新規{% else %}イベント編集{% endif %} | ReNU</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/base.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-inner">
+        <h1 class="logo">{% if mode == 'new' %}イベント新規{% else %}イベント編集{% endif %}</h1>
+        <a class="button secondary" href="/my/team/events">一覧へ</a>
+      </div>
+    </header>
+    <main class="main">
+      <section class="card">
+        {% if error %}
+        <p class="error">{{ error }}</p>
+        {% endif %}
+        <form method="post" action="{% if mode == 'new' %}/my/team/events/new{% else %}/my/team/events/{{ event.event_id }}/edit{% endif %}">
+          <label>日付 <input type="date" name="date" required value="{{ event.date or '' }}" /></label>
+          <label>開始 <input type="time" name="start_time" required value="{{ event.start_time or '' }}" /></label>
+          <label>終了 <input type="time" name="end_time" required value="{{ event.end_time or '' }}" /></label>
+          <label>イベント名 <input type="text" name="name" required value="{{ event.name or '' }}" /></label>
+          <label>必要人数 <input type="number" name="required_members" min="1" value="{{ event.required_members or 3 }}" /></label>
+          <label>対象チーム（1つ）
+            <select name="target_team" required>
+              {% for t in teams %}
+              <option value="{{ t }}" {% if event.target_teams and (event.target_teams|string).split(',')[0]|trim == t %}selected{% endif %}>{{ t }}</option>
+              {% endfor %}
+            </select>
+          </label>
+          <label><input type="checkbox" name="is_busy_season" value="true" {% if event.is_busy_season and event.is_busy_season|string|lower in ['true','1','yes'] %}checked{% endif %} /> 繁忙期</label>
+          <button type="submit" class="button primary">保存</button>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>参加者編集 | {{ event.name or event.event_id }} | ReNU</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/base.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-inner">
+        <h1 class="logo">参加者: {{ event.name or event.event_id }}</h1>
+        <a class="button secondary" href="/my/team/events">一覧へ</a>
+      </div>
+    </header>
+    <main class="main">
+      <section class="card">
+        <p>{{ event.date }} {{ event.start_time }}–{{ event.end_time }}</p>
+        <h3>登録済み</h3>
+        {% if not attendances %}
+        <p>まだいません。</p>
+        {% else %}
+        <ul>
+          {% for a in attendances %}
+          <li>
+            メンバーID {{ a.member_id }} / {{ a.role or "Member" }} / {{ a.status or "" }}
+            <form method="post" action="/my/team/events/{{ event.event_id }}/attendances/{{ a.attendance_id }}/remove" style="display:inline">
+              <button type="submit" class="button secondary">削除</button>
+            </form>
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+        {% if available_members %}
+        <h3>追加（自チームメンバー）</h3>
+        <form method="post" action="/my/team/events/{{ event.event_id }}/attendances/add">
+          <select name="member_id" required>
+            {% for m in available_members %}
+            <option value="{{ m.member_id }}">{{ m.full_name or m.member_id }} ({{ m.member_id }})</option>
+            {% endfor %}
+          </select>
+          <input type="text" name="role" placeholder="役割" value="Member" />
+          <button type="submit" class="button primary">追加</button>
+        </form>
+        {% else %}
+        <p>追加可能なメンバーはいません（全員登録済み、またはチームにメンバーなし）。</p>
+        {% endif %}
+      </section>
+    </main>
+  </body>
+</html>

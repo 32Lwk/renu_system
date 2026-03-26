@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{ title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/base.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-inner">
+        <h1 class="logo">ReNU 勤怠・シフト管理</h1>
+      </div>
+    </header>
+    <main class="main">
+      {% if error %}
+      <div class="alert alert-error">
+        {{ error }}
+      </div>
+      {% endif %}
+      <div class="hero-layout">
+        <section class="card hero-main">
+          <h2>メンバーとしてログイン</h2>
+          <p>シフトの確認や出勤変更申請を行うには、Discord でログインしてください。</p>
+          <div class="login-buttons">
+            <a class="button primary" href="/auth/discord/start">Discord でログイン / 登録</a>
+            {% if dev_login_available %}
+            <a class="button secondary" href="/auth/dev-login">開発用テストログイン</a>
+            {% endif %}
+          </div>
+        </section>
+        <section class="card hero-side">
+          <h2>お知らせ・メンテナンス情報</h2>
+          <ul class="notice-list">
+            <li>現在は開発中のため、データはテスト用です。</li>
+            <li>フィッシング対策として、ブラウザのアドレスバーが <code>127.0.0.1:8000</code> であることを必ず確認してください。</li>
+          </ul>
+        </section>
+      </div>
+    </main>
+  </body>
+</html>
+

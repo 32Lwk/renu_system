@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>マイページ | ReNU</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/base.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-inner">
+        <h1 class="logo">マイページ</h1>
+      </div>
+    </header>
+    <main class="main">
+      <section class="card">
+        <h2>ようこそ、{{ member.full_name or "メンバー" }} さん</h2>
+        <p>
+          学年: {{ member.grade or "-" }} /
+          チーム: {{ member.teams or "-" }} /
+          ロール: {{ member.roles or "-" }}
+        </p>
+        <div class="login-buttons">
+          <a class="button primary" href="/my/events">自分の出勤予定を見る</a>
+          <a class="button secondary" href="/my/busy/preferences">繁忙期の希望を登録する</a>
+          <a class="button secondary" href="/my/busy/preferences/list">自分の繁忙期希望の一覧</a>
+          {% if overall_role >= 1 %}
+          <a class="button secondary" href="/my/team/busy/preferences">自チームの希望一覧</a>
+          {% endif %}
+          {% if overall_role >= 2 %}
+          <a class="button secondary" href="/my/team/events">自チームイベントの作成・編集</a>
+          {% endif %}
+          {% if overall_role >= 2 %}
+          <a class="button secondary" href="/my/team/notifications">チーム向け一斉通知（メール / Discord）</a>
+          {% endif %}
+          {% if overall_role >= 3 %}
+          <a class="button secondary" href="/my/team/assignment/proposals">自チーム割り当て案の作成・提案</a>
+          {% endif %}
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
+

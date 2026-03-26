@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>管理ダッシュボード | ReNU 勤怠・シフト管理</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/base.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-inner">
+        <h1 class="logo">ReNU 管理ダッシュボード</h1>
+      </div>
+    </header>
+    <main class="main">
+      <section class="card" style="margin-bottom: 1.5rem">
+        <h2>管理メニュー</h2>
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1rem;
+          "
+        >
+          <a class="button secondary" href="#events" style="text-align: center">イベント一覧（下）</a>
+          <a class="button secondary" href="/admin/members" style="text-align: center">メンバー一覧</a>
+          <a class="button secondary" href="/admin/busy/summary" style="text-align: center">繁忙期希望の集計</a>
+          <a class="button secondary" href="/admin/busy/preview" style="text-align: center">割当プレビュー</a>
+          <a class="button secondary" href="/admin/assignment/proposals" style="text-align: center">割当提案の承認</a>
+          <a class="button primary" href="/admin/notifications" style="text-align: center">一斉通知（メール / Discord）</a>
+        </div>
+      </section>
+      <section class="card" id="events">
+        <h2>今後のイベント一覧</h2>
+        {% if events %}
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem">
+          <thead>
+            <tr>
+              <th style="text-align: left; padding: 0.4rem; border-bottom: 1px solid #1f2937">
+                日付
+              </th>
+              <th style="text-align: left; padding: 0.4rem; border-bottom: 1px solid #1f2937">
+                時間
+              </th>
+              <th style="text-align: left; padding: 0.4rem; border-bottom: 1px solid #1f2937">
+                イベント名
+              </th>
+              <th style="text-align: right; padding: 0.4rem; border-bottom: 1px solid #1f2937">
+                必要人数
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for e in events %}
+            <tr>
+              <td style="padding: 0.4rem; border-bottom: 1px solid #111827">
+                {{ e.date }}
+              </td>
+              <td style="padding: 0.4rem; border-bottom: 1px solid #111827">
+                {{ e.start_time }}〜{{ e.end_time }}
+              </td>
+              <td style="padding: 0.4rem; border-bottom: 1px solid #111827">
+                {{ e.name }}
+              </td>
+              <td
+                style="
+                  padding: 0.4rem;
+                  border-bottom: 1px solid #111827;
+                  text-align: right;
+                "
+              >
+                {{ e.required_members or '-' }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p>表示できるイベントがまだありません。</p>
+        {% endif %}
+      </section>
+    </main>
+  </body>
+</html>
+

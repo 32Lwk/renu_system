@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>繁忙期希望の集計 | ReNU</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/base.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-inner">
+        <h1 class="logo">繁忙期希望の集計</h1>
+        <a class="button secondary" href="/admin">ダッシュボードへ</a>
+      </div>
+    </header>
+    <main class="main">
+      <section class="card">
+        <p>登録件数（全件）: <strong>{{ total_prefs }}</strong></p>
+        {% if not rows %}
+        <p>希望データがありません。</p>
+        {% else %}
+        <table class="table">
+          <thead>
+            <tr>
+              <th>希望数</th>
+              <th>イベント</th>
+              <th>日付</th>
+              <th>event_id</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in rows %}
+            <tr>
+              <td>{{ r.count }}</td>
+              <td>{{ r.name }}</td>
+              <td>{{ r.date }}</td>
+              <td><code>{{ r.event_id }}</code></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+      </section>
+    </main>
+  </body>
+</html>

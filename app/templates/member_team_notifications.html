@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>チーム向け一斉通知 | ReNU</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/base.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-inner">
+        <h1 class="logo">チーム向け一斉通知</h1>
+        <a class="button secondary" href="/my">マイページへ</a>
+      </div>
+    </header>
+    <main class="main">
+      {% if error %}<section class="card"><p class="error">{{ error }}</p></section>{% endif %}
+      {% if info %}<section class="card"><p class="info">{{ info }}</p></section>{% endif %}
+      {% if can_email %}
+      <section class="card">
+        <h2>メール（Leader・自チーム向け）</h2>
+        <p class="muted">
+          チーム・イベント・個別メンバーを組み合わせて指定できます。
+          notify_optout のメンバーは除外されます。
+        </p>
+        <form method="post" action="/notifications/email" class="form-grid">
+          <div class="form-section">
+            <p class="form-section-title">宛先</p>
+            <label>
+              対象チーム（Leader として管轄するチーム）
+              <select name="target_team" required>
+                {% for t in leader_teams %}
+                <option value="{{ t }}">{{ t }}</option>
+                {% endfor %}
+              </select>
+            </label>
+            <label>
+              イベント参加メンバーに絞る（任意）
+              <select name="event_id">
+                <option value="">イベントからは選ばない（チーム全員が対象）</option>
+                {% for e in events %}
+                <option value="{{ e.event_id }}">
+                  {{ e.date or "-" }} / {{ e.name or "イベント" }} [{{ e.team }}]
+                </option>
+                {% endfor %}
+              </select>
+            </label>
+            <p class="form-hint">
+              チェックを入れたメンバーのみに送れます。未選択なら「対象チーム」＋必要なら「イベント」で宛先が決まります。
+            </p>
+            <div class="member-picker-wrap">
+              <div class="member-picker-selected" aria-live="polite">
+                <span class="muted">選択中のメンバー：</span>
+                <span class="member-picker-selected-names">（未選択）</span>
+              </div>
+              <label class="form-grid" style="margin-bottom: 0.5rem">
+                名前・班・学部・学年・ロール・ID で絞り込み
+                <input
+                  type="search"
+                  class="member-picker-filter"
+                  placeholder="例: 佐藤 / B2 / Leader / 02 / mem_"
+                  autocomplete="off"
+                  aria-label="メンバー一覧を絞り込む"
+                />
+              </label>
+              <div class="member-picker" role="group" aria-label="メンバー選択">
+                {% for m in selectable_members %}
+                <label
+                  class="member-picker-row"
+                  data-search="{{ (m.full_name ~ ' ' ~ m.teams ~ ' ' ~ m.member_id ~ ' ' ~ (m.grade or '') ~ ' ' ~ (m.faculty_code or '') ~ ' ' ~ (m.faculty_label or '') ~ ' ' ~ (m.roles or ''))|lower|e }}"
+                >
+                  <input type="checkbox" name="member_ids" value="{{ m.member_id }}" />
+                  <span class="member-picker-text">
+                    <strong>{{ m.full_name or "（氏名なし）" }}</strong>
+                    <span class="member-picker-detail"
+                      >学部学科 {{ m.faculty_label or "—" }}（{{ m.faculty_code or "—" }}） ／ 学年 {{ m.grade or "—" }} ／
+                      ロール {{ m.roles or "—" }}</span
+                    >
+                    <span class="member-picker-meta">{{ m.teams or "-" }} ／ {{ m.member_id }}</span>
+                  </span>
+                </label>
+                {% endfor %}
+              </div>
+              {% if not selectable_members %}
+              <p class="muted">
+                管轄チームに所属するアクティブメンバーがいません。Google シートの members で teams / member_id / status を確認してください。
+              </p>
+              {% endif %}
+            </div>
+          </div>
+          <script>
+            (function () {
+              function syncSelected(wrap) {
+                var el = wrap.querySelector(".member-picker-selected-names");
+                if (!el) return;
+                var names = [];
+                wrap.querySelectorAll(".member-picker-row input[type='checkbox']").forEach(function (cb) {
+                  if (!cb.checked) return;
+                  var row = cb.closest(".member-picker-row");
+                  var strong = row && row.querySelector(".member-picker-text strong");
+                  if (strong) names.push(strong.textContent.trim());
+                });
+                el.textContent = names.length ? names.join("、") : "（未選択）";
+              }
+              function applyFilter(inp) {
+                var q = (inp.value || "").trim().toLowerCase();
+                var wrap = inp.closest(".member-picker-wrap");
+                if (!wrap) return;
+                wrap.querySelectorAll(".member-picker-row").forEach(function (row) {
+                  var hay = (row.getAttribute("data-search") || "").toLowerCase();
+                  row.style.display = !q || hay.indexOf(q) !== -1 ? "" : "none";
+                });
+              }
+              document.querySelectorAll(".member-picker-wrap").forEach(function (wrap) {
+                var picker = wrap.querySelector(".member-picker");
+                if (picker) {
+                  picker.addEventListener("change", function (e) {
+                    if (e.target && e.target.matches && e.target.matches("input[type='checkbox']"))
+                      syncSelected(wrap);
+                  });
+                }
+                syncSelected(wrap);
+              });
+              document.querySelectorAll(".member-picker-filter").forEach(function (inp) {
+                inp.addEventListener("input", function () {
+                  applyFilter(this);
+                });
+              });
+            })();
+          </script>
+
+          <div class="form-section">
+            <p class="form-section-title">メールの内容</p>
+            <label>
+              件名
+              <input type="text" name="subject" required placeholder="例: 今週末の自チームシフトについて" />
+            </label>
+            <p class="form-hint">
+              本文は <strong>Enter で段落・改行</strong>してください。
+              送信されたメールでも同じ改行がそのまま表示されます。
+            </p>
+            <label>
+              本文
+              <textarea
+                class="form-body"
+                name="body"
+                rows="14"
+                required
+                placeholder="チームの皆さんへ&#10;&#10;■ 内容&#10;…&#10;&#10;■ お願い&#10;…&#10;&#10;よろしくお願いします。"
+              ></textarea>
+            </label>
+          </div>
+
+          <button type="submit" class="button primary">メールを一斉送信</button>
+        </form>
+      </section>
+      {% endif %}
+      {% if can_discord %}
+      <section class="card" {% if can_email %}style="margin-top:1.5rem"{% endif %}>
+        <h2>Discord チャンネル（SubLeader 以上）</h2>
+        <p class="muted">
+          Bot が参加しているチャンネル ID を指定して投稿します。ロールメンション（例:
+          <code>@renu-leader</code>）や <code>@here</code> をそのまま本文に書けます。
+        </p>
+        <form method="post" action="/notifications/discord/channel" class="form-grid">
+          <label>
+            チャンネル ID
+            <input type="text" name="channel_id" required placeholder="例: 123456789012345678" />
+          </label>
+          <label>
+            メッセージ
+            <textarea
+              name="message"
+              rows="5"
+              required
+              class="form-body"
+              placeholder="例:&#10;@here&#10;&#10;明日のイベントについて共有します。"
+            ></textarea>
+          </label>
+          <button type="submit" class="button secondary">投稿</button>
+        </form>
+      </section>
+      {% endif %}
+    </main>
+  </body>
+</html>

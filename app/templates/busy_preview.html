@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>繁忙期シフト案プレビュー | ReNU 管理</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/base.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-inner">
+        <h1 class="logo">繁忙期シフト案プレビュー</h1>
+      </div>
+    </header>
+    <main class="main">
+      <section class="card">
+        <h2>自動割当案（開発用）</h2>
+        {% if suggestions %}
+        <ul style="list-style: none; padding-left: 0">
+          {% for s in suggestions %}
+          <li style="margin-bottom: 0.75rem">
+            <strong>{{ s.event.date }} | {{ s.event.id }}</strong>
+            <br />
+            割当メンバー:
+            {% if s.members %}
+            {{ s.members | join(", ") }}
+            {% else %}
+            なし
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p>割当案を生成できるイベントがありません。</p>
+        {% endif %}
+      </section>
+    </main>
+  </body>
+</html>
+

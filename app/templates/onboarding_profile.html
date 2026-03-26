@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>プロフィール登録 | ReNU</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/base.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-inner">
+        <h1 class="logo">ReNU プロフィール登録</h1>
+      </div>
+    </header>
+    <main class="main">
+      <section class="card">
+        <h2>学籍番号・氏名の登録</h2>
+        {% if error %}
+        <p class="error">{{ error }}</p>
+        {% endif %}
+        <form method="post" action="/onboarding/profile">
+          <div class="form-group">
+            <label for="full_name">氏名</label>
+            <input id="full_name" name="full_name" type="text" class="input" required />
+          </div>
+          <div class="form-group">
+            <label for="student_id">学籍番号</label>
+            <input
+              id="student_id"
+              name="student_id"
+              type="text"
+              class="input"
+              required
+              placeholder="例: 012400001"
+            />
+          </div>
+          <div class="form-group">
+            <label for="faculty_code">学部コード</label>
+            <select id="faculty_code" name="faculty_code" class="input" required>
+              <option value="">選択してください</option>
+              <option value="01">01</option>
+              <option value="02">02</option>
+              <option value="03">03</option>
+              <option value="04">04</option>
+              <option value="05">05</option>
+              <option value="06">06</option>
+              <option value="07">07</option>
+              <option value="08">08</option>
+              <option value="09">09</option>
+              <option value="17">17</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="entrance_year">入学年度（下2桁）</label>
+            <input id="entrance_year" name="entrance_year" type="text" class="input" required placeholder="例: 24" />
+          </div>
+          <div class="form-group">
+            <label for="grade">学年</label>
+            <select id="grade" name="grade" class="input" required>
+              <option value="B1">B1</option>
+              <option value="B2">B2</option>
+              <option value="B3">B3</option>
+            </select>
+          </div>
+          <button type="submit" class="button primary">登録</button>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>
+

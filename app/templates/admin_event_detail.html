@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>イベント詳細 | ReNU 管理</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/base.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-inner">
+        <h1 class="logo">イベント詳細（出勤管理）</h1>
+      </div>
+    </header>
+    <main class="main">
+      <section class="card">
+        <h2>出勤者一覧</h2>
+        {% if attendees %}
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem">
+          <thead>
+            <tr>
+              <th style="text-align: left; padding: 0.4rem; border-bottom: 1px solid #1f2937">
+                メンバー
+              </th>
+              <th style="text-align: left; padding: 0.4rem; border-bottom: 1px solid #1f2937">
+                状態
+              </th>
+              <th style="text-align: left; padding: 0.4rem; border-bottom: 1px solid #1f2937">
+                役割
+              </th>
+              <th style="text-align: left; padding: 0.4rem; border-bottom: 1px solid #1f2937">
+                備考
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in attendees %}
+            <tr>
+              <td style="padding: 0.4rem; border-bottom: 1px solid #111827">
+                {{ a.member_name }}
+              </td>
+              <td style="padding: 0.4rem; border-bottom: 1px solid #111827">
+                <form
+                  method="post"
+                  action="/admin/attendances/{{ a.attendance_id }}/status"
+                >
+                  <select name="status_value">
+                    <option value="planned" {% if a.status == 'planned' %}selected{% endif %}>
+                      出勤予定
+                    </option>
+                    <option value="absent" {% if a.status == 'absent' %}selected{% endif %}>
+                      欠席
+                    </option>
+                    <option value="late" {% if a.status == 'late' %}selected{% endif %}>
+                      遅刻
+                    </option>
+                    <option
+                      value="leave_early"
+                      {% if a.status == 'leave_early' %}selected{% endif %}
+                    >
+                      早退
+                    </option>
+                  </select>
+                  <input
+                    type="text"
+                    name="note"
+                    value="{{ a.note or '' }}"
+                    placeholder="備考"
+                    style="margin-left: 0.25rem; width: 40%"
+                  />
+                  <button class="button primary" type="submit" style="margin-left: 0.25rem">
+                    更新
+                  </button>
+                </form>
+              </td>
+              <td style="padding: 0.4rem; border-bottom: 1px solid #111827">
+                {{ a.role_name or '-' }}
+              </td>
+              <td style="padding: 0.4rem; border-bottom: 1px solid #111827">
+                {{ a.note or '-' }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p>出勤者がまだ登録されていません。</p>
+        {% endif %}
+      </section>
+    </main>
+  </body>
+</html>
+

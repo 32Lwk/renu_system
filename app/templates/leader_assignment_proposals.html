@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>割り当て案の提案 | ReNU</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/base.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-inner">
+        <h1 class="logo">出勤割り当て案（提案）</h1>
+        <a class="button secondary" href="/my">マイページへ</a>
+      </div>
+    </header>
+    <main class="main">
+      <section class="card">
+        <p>繁忙期（is_busy_season）のイベントに対し、自チームのメンバーを選んで管理者へ提案します。承認後に「planned」として確定されます。</p>
+        {% if message %}
+        <p class="info">{{ message }}</p>
+        {% endif %}
+        {% if not event_blocks %}
+        <p>対象イベントがありません。イベントの「繁忙期」にチェックを入れ、対象チームにあなたの Leader チームが含まれるようにしてください。</p>
+        {% else %}
+        <form method="post" action="/my/team/assignment/proposals">
+          {% for block in event_blocks %}
+          {% set ev = block.event %}
+          <h3>{{ ev.name or ev.event_id }}（{{ ev.date }} {{ ev.start_time }}–{{ ev.end_time }}）</h3>
+          <p class="muted">event_id: {{ ev.event_id }}</p>
+          {% if not block.candidates %}
+          <p>候補メンバーがいません。</p>
+          {% else %}
+          <ul class="check-list">
+            {% for m in block.candidates %}
+            <li>
+              <label>
+                <input type="checkbox" name="assign" value="{{ ev.event_id }}|{{ m.member_id }}" />
+                {{ m.full_name or m.member_id }} ({{ m.member_id }})
+              </label>
+            </li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+          {% endfor %}
+          <button type="submit" class="button primary">この内容で提案する</button>
+        </form>
+        {% endif %}
+      </section>
+    </main>
+  </body>
+</html>

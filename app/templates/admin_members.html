@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>メンバー一覧 | ReNU 管理</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/base.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-inner">
+        <h1 class="logo">ReNU メンバー管理</h1>
+      </div>
+    </header>
+    <main class="main">
+      <section class="card">
+        <h2>メンバー一覧</h2>
+        <p>
+          学部学科コード（学籍番号先頭2桁と同じ値）、学年、ロールで絞り込みできます。ロールはカンマ区切りのいずれかに一致、または先頭一致します（例:
+          <code>Leader</code>、<code>App</code>）。
+        </p>
+        <form
+          method="get"
+          action="/admin/members"
+          style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end; margin-bottom: 1rem"
+        >
+          <div>
+            <label for="f_faculty" style="display: block; font-size: 0.85rem; margin-bottom: 0.2rem"
+              >学部学科コード</label
+            >
+            <input
+              id="f_faculty"
+              name="faculty"
+              type="text"
+              value="{{ filter_faculty or '' }}"
+              placeholder="例: 02"
+              style="padding: 0.35rem 0.5rem; min-width: 6rem"
+            />
+          </div>
+          <div>
+            <label for="f_grade" style="display: block; font-size: 0.85rem; margin-bottom: 0.2rem">学年</label>
+            <input
+              id="f_grade"
+              name="grade"
+              type="text"
+              value="{{ filter_grade or '' }}"
+              placeholder="例: B2"
+              style="padding: 0.35rem 0.5rem; min-width: 5rem"
+            />
+          </div>
+          <div>
+            <label for="f_role" style="display: block; font-size: 0.85rem; margin-bottom: 0.2rem">ロール</label>
+            <input
+              id="f_role"
+              name="role"
+              type="text"
+              value="{{ filter_role or '' }}"
+              placeholder="例: Leader"
+              style="padding: 0.35rem 0.5rem; min-width: 8rem"
+            />
+          </div>
+          <button class="button primary" type="submit">絞り込み</button>
+          <a class="button" href="/admin/members">条件クリア</a>
+        </form>
+        <p><a class="button primary" href="/admin/members/new">新規メンバー作成</a></p>
+        {% if members %}
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem">
+          <thead>
+            <tr>
+              <th style="text-align: left; padding: 0.4rem; border-bottom: 1px solid #1f2937">名前</th>
+              <th style="text-align: left; padding: 0.4rem; border-bottom: 1px solid #1f2937">学部</th>
+              <th style="text-align: left; padding: 0.4rem; border-bottom: 1px solid #1f2937">学年</th>
+              <th style="text-align: left; padding: 0.4rem; border-bottom: 1px solid #1f2937">ロール</th>
+              <th style="text-align: left; padding: 0.4rem; border-bottom: 1px solid #1f2937">班</th>
+              <th style="text-align: left; padding: 0.4rem; border-bottom: 1px solid #1f2937">状態</th>
+              <th style="text-align: left; padding: 0.4rem; border-bottom: 1px solid #1f2937">メール</th>
+              <th style="text-align: left; padding: 0.4rem; border-bottom: 1px solid #1f2937">Discord</th>
+              <th style="text-align: left; padding: 0.4rem; border-bottom: 1px solid #1f2937">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for m in members %}
+            <tr>
+              <td style="padding: 0.4rem; border-bottom: 1px solid #111827">{{ m.name }}</td>
+              <td style="padding: 0.4rem; border-bottom: 1px solid #111827">{{ m.faculty_code or '-' }}</td>
+              <td style="padding: 0.4rem; border-bottom: 1px solid #111827">{{ m.grade }}</td>
+              <td style="padding: 0.4rem; border-bottom: 1px solid #111827; max-width: 12rem; word-break: break-all">
+                {{ m.roles or '-' }}
+              </td>
+              <td style="padding: 0.4rem; border-bottom: 1px solid #111827; max-width: 10rem; word-break: break-all">
+                {{ m.teams if m.teams is defined else '-' }}
+              </td>
+              <td style="padding: 0.4rem; border-bottom: 1px solid #111827">
+                {{ m.status if m.status is defined else '-' }}
+              </td>
+              <td style="padding: 0.4rem; border-bottom: 1px solid #111827">{{ m.email or '-' }}</td>
+              <td style="padding: 0.4rem; border-bottom: 1px solid #111827">{{ m.discord_id or '-' }}</td>
+              <td style="padding: 0.4rem; border-bottom: 1px solid #111827">
+                {% if m.member_id %}
+                <a class="button" href="/admin/members/{{ m.member_id }}/edit">編集</a>
+                <form method="post" action="/admin/members/{{ m.member_id }}/deactivate" style="display: inline">
+                  <button class="button" type="submit">無効化</button>
+                </form>
+                {% else %}
+                <span style="color: #6b7280; font-size: 0.85rem">mockdb</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p>条件に一致するメンバーはいません（または未登録です）。</p>
+        {% endif %}
+      </section>
+    </main>
+  </body>
+</html>

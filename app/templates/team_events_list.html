@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>自チームイベント | ReNU</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/base.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-inner">
+        <h1 class="logo">自チームイベント</h1>
+        <a class="button secondary" href="/my">マイページへ</a>
+      </div>
+    </header>
+    <main class="main">
+      <section class="card">
+        <p><a class="button primary" href="/my/team/events/new">新規イベント</a></p>
+        {% if not events %}
+        <p>管理対象チーム向けのイベントはまだありません。</p>
+        {% else %}
+        <table class="table">
+          <thead>
+            <tr>
+              <th>日付</th>
+              <th>時間</th>
+              <th>名前</th>
+              <th>対象チーム</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for e in events %}
+            <tr>
+              <td>{{ e.date or "-" }}</td>
+              <td>{{ e.start_time or "" }}–{{ e.end_time or "" }}</td>
+              <td>{{ e.name or "" }}</td>
+              <td>{{ e.target_teams or "" }}</td>
+              <td>
+                <a href="/my/team/events/{{ e.event_id }}/edit">編集</a>
+                ·
+                <a href="/my/team/events/{{ e.event_id }}/attendances">参加者</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+      </section>
+    </main>
+  </body>
+</html>

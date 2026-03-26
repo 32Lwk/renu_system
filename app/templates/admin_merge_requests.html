@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>承認待ち（統合） | ReNU 管理</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/base.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-inner">
+        <h1 class="logo">ReNU 承認待ち（統合）</h1>
+      </div>
+    </header>
+    <main class="main">
+      <section class="card">
+        <h2>merge_pending 一覧</h2>
+        {% if requests %}
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem">
+          <thead>
+            <tr>
+              <th style="text-align: left; padding: 0.4rem; border-bottom: 1px solid #1f2937">氏名</th>
+              <th style="text-align: left; padding: 0.4rem; border-bottom: 1px solid #1f2937">学籍番号</th>
+              <th style="text-align: left; padding: 0.4rem; border-bottom: 1px solid #1f2937">メール</th>
+              <th style="text-align: left; padding: 0.4rem; border-bottom: 1px solid #1f2937">Discord</th>
+              <th style="text-align: left; padding: 0.4rem; border-bottom: 1px solid #1f2937">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in requests %}
+            <tr>
+              <td style="padding: 0.4rem; border-bottom: 1px solid #111827">{{ r.full_name }}</td>
+              <td style="padding: 0.4rem; border-bottom: 1px solid #111827">{{ r.student_id }}</td>
+              <td style="padding: 0.4rem; border-bottom: 1px solid #111827">{{ r.email }}</td>
+              <td style="padding: 0.4rem; border-bottom: 1px solid #111827">{{ r.discord_username }}</td>
+              <td style="padding: 0.4rem; border-bottom: 1px solid #111827">
+                <form method="post" action="/admin/merge-requests/{{ r.member_id }}/approve" style="display: inline">
+                  <button class="button primary" type="submit">承認</button>
+                </form>
+                <form method="post" action="/admin/merge-requests/{{ r.member_id }}/reject" style="display: inline">
+                  <button class="button" type="submit">却下</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p>承認待ちはありません。</p>
+        {% endif %}
+      </section>
+    </main>
+  </body>
+</html>
+

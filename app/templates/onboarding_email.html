@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>メール認証 | ReNU</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/static/base.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-inner">
+        <h1 class="logo">ReNU メール認証</h1>
+      </div>
+    </header>
+    <main class="main">
+      <section class="card">
+        <h2>メールアドレスの確認</h2>
+        <p>
+          ReNU で利用するメールアドレスを入力してください。6桁の認証コードを送信します。
+        </p>
+        {% if error %}
+        <p class="error">{{ error }}</p>
+        {% endif %}
+        {% if info %}
+        <p class="info">{{ info }}</p>
+        {% endif %}
+        <form method="post" action="/onboarding/email">
+          <div class="form-group">
+            <label for="email">メールアドレス</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              class="input"
+              required
+              placeholder="例: yamada.taro.24@example.com"
+            />
+          </div>
+          <button type="submit" class="button primary">認証コードを送信</button>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>
+
