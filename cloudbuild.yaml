@@ -4,6 +4,9 @@ substitutions:
   _AR_REPO: renu
   _IMAGE: renu-system
 
+options:
+  logging: CLOUD_LOGGING_ONLY
+
 steps:
   # Build Docker image from Dockerfile
   - name: gcr.io/cloud-builders/docker
