@@ -1,0 +1,154 @@
+{% extends "_layout.html" %}
+{% from "_ui.html" import card %}
+
+{% block title %}一斉通知（管理者） | ReNU{% endblock %}
+
+{% block content %}
+  {% call card("一斉通知（管理者）", "メール送信 / Discord 投稿を行います") %}
+    <h3 class="text-base font-semibold text-ink-100">メール（Gmail API）</h3>
+    <p class="mt-1 text-sm text-ink-400">
+      宛先と本文を分けて入力できます。notify_optout のメンバーは自動で除外されます。
+    </p>
+
+    <form method="post" action="/notifications/email" class="form-grid mt-4">
+      <div class="form-section">
+        <p class="form-section-title">宛先</p>
+        <label>
+          対象チーム（任意・1チーム名）
+          <input type="text" name="target_team" placeholder="例: 提案 / すまい" />
+        </label>
+        <label>
+          イベント単位で絞り込み（任意）
+          <select name="event_id">
+            <option value="">イベントからは選ばない</option>
+            {% for e in events %}
+              <option value="{{ e.event_id }}">{{ e.date or "-" }} / {{ e.name or "イベント" }} ({{ e.event_id }})</option>
+            {% endfor %}
+          </select>
+        </label>
+        <p class="form-hint">
+          チェックを入れたメンバーに送ります。誰も選ばなければ「対象チーム／イベント」のみで宛先が決まります。検索欄で名前・班・学部コード・学年・ロール・ID を絞り込めます。
+        </p>
+        <div class="member-picker-wrap">
+          <div class="member-picker-selected" aria-live="polite">
+            <span class="muted">選択中のメンバー：</span>
+            <span class="member-picker-selected-names">（未選択）</span>
+          </div>
+          <label class="form-grid" style="margin-bottom: 0.5rem">
+            名前・班・学部・学年・ロール・ID で絞り込み
+            <input
+              type="search"
+              class="member-picker-filter"
+              placeholder="例: 佐藤 / B2 / Leader / 02 / mem_"
+              autocomplete="off"
+              aria-label="メンバー一覧を絞り込む"
+            />
+          </label>
+          <div class="member-picker" role="group" aria-label="メンバー選択">
+            {% for m in selectable_members %}
+              <label
+                class="member-picker-row"
+                data-search="{{ (m.full_name ~ ' ' ~ m.teams ~ ' ' ~ m.member_id ~ ' ' ~ (m.grade or '') ~ ' ' ~ (m.faculty_code or '') ~ ' ' ~ (m.faculty_label or '') ~ ' ' ~ (m.roles or ''))|lower|e }}"
+              >
+                <input type="checkbox" name="member_ids" value="{{ m.member_id }}" />
+                <span class="member-picker-text">
+                  <strong>{{ m.full_name or "（氏名なし）" }}</strong>
+                  <span class="member-picker-detail">学部学科 {{ m.faculty_label or "—" }}（{{ m.faculty_code or "—" }}） ／ 学年 {{ m.grade or "—" }} ／ ロール {{ m.roles or "—" }}</span>
+                  <span class="member-picker-meta">{{ m.teams or "-" }} ／ {{ m.member_id }}</span>
+                </span>
+              </label>
+            {% endfor %}
+          </div>
+          {% if not selectable_members %}
+            <p class="muted">アクティブなメンバーが取得できませんでした。members シートの列名（member_id / status）を確認してください。</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <script>
+        (function () {
+          function syncSelected(wrap) {
+            var el = wrap.querySelector(".member-picker-selected-names");
+            if (!el) return;
+            var names = [];
+            wrap.querySelectorAll(".member-picker-row input[type='checkbox']").forEach(function (cb) {
+              if (!cb.checked) return;
+              var row = cb.closest(".member-picker-row");
+              var strong = row && row.querySelector(".member-picker-text strong");
+              if (strong) names.push(strong.textContent.trim());
+            });
+            el.textContent = names.length ? names.join("、") : "（未選択）";
+          }
+          function applyFilter(inp) {
+            var q = (inp.value || "").trim().toLowerCase();
+            var wrap = inp.closest(".member-picker-wrap");
+            if (!wrap) return;
+            wrap.querySelectorAll(".member-picker-row").forEach(function (row) {
+              var hay = (row.getAttribute("data-search") || "").toLowerCase();
+              row.style.display = !q || hay.indexOf(q) !== -1 ? "" : "none";
+            });
+          }
+          document.querySelectorAll(".member-picker-wrap").forEach(function (wrap) {
+            var picker = wrap.querySelector(".member-picker");
+            if (picker) {
+              picker.addEventListener("change", function (e) {
+                if (e.target && e.target.matches && e.target.matches("input[type='checkbox']")) syncSelected(wrap);
+              });
+            }
+            syncSelected(wrap);
+          });
+          document.querySelectorAll(".member-picker-filter").forEach(function (inp) {
+            inp.addEventListener("input", function () {
+              applyFilter(this);
+            });
+          });
+        })();
+      </script>
+
+      <div class="form-section">
+        <p class="form-section-title">メールの内容</p>
+        <label>
+          件名
+          <input type="text" name="subject" required placeholder="例: 今週末のシフト確認のお願い" />
+        </label>
+        <p class="form-hint">
+          本文は <strong>Enter で改行</strong>してください。受信トレイでも同じ改行で表示されます。
+        </p>
+        <label>
+          本文
+          <textarea
+            class="form-body"
+            name="body"
+            rows="14"
+            required
+            placeholder="お疲れ様です。&#10;&#10;■ お知らせ&#10;…&#10;&#10;■ 確認してほしいこと&#10;…&#10;&#10;よろしくお願いします。"
+          ></textarea>
+        </label>
+      </div>
+
+      <button type="submit" class="ui-btn ui-btn-primary">メールを一斉送信</button>
+    </form>
+  {% endcall %}
+
+  <div class="mt-5">
+    {% call card("Discord チャンネル", "チャンネルIDを指定して投稿します（Bot参加チャンネルのみ）") %}
+      <form method="post" action="/notifications/discord/channel" class="form-grid">
+        <label>
+          チャンネル ID
+          <input type="text" name="channel_id" required placeholder="例: 123456789012345678" />
+        </label>
+        <label>
+          メッセージ
+          <textarea
+            name="message"
+            rows="5"
+            required
+            class="form-body"
+            placeholder="例:&#10;@here&#10;&#10;今週末の店舗シフトについてご確認ください。"
+          ></textarea>
+        </label>
+        <button type="submit" class="ui-btn ui-btn-secondary">Discord に投稿</button>
+      </form>
+    {% endcall %}
+  </div>
+{% endblock %}

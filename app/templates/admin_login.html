@@ -1,0 +1,20 @@
+{% extends "_layout.html" %}
+{% from "_ui.html" import card, field_label, input %}
+
+{% block title %}管理者ログイン | ReNU{% endblock %}
+
+{% block content %}
+  {% call card("管理者ログイン", "管理者用パスワードを入力してください") %}
+    <form method="post" class="grid gap-3 max-w-md">
+      <div class="ui-field">
+        {{ field_label("password", "パスワード") }}
+        {{ input("password", "password", type="password", required=true, autocomplete="current-password") }}
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button class="ui-btn ui-btn-primary" type="submit">ログイン</button>
+        <a class="ui-btn ui-btn-secondary" href="/">トップへ戻る</a>
+      </div>
+    </form>
+  {% endcall %}
+{% endblock %}
+

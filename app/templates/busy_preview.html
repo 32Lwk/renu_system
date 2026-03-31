@@ -1,0 +1,32 @@
+{% extends "_layout.html" %}
+{% from "_ui.html" import card %}
+
+{% block title %}繁忙期シフト案プレビュー | ReNU 管理{% endblock %}
+
+{% block content %}
+  {% call card("自動割当案（開発用）", "生成された割当案のプレビューです") %}
+    {% if suggestions %}
+      <ul class="space-y-3">
+        {% for s in suggestions %}
+          <li class="rounded-xl border border-ink-700/40 bg-ink-950/40 p-3">
+            <div class="flex flex-wrap items-baseline justify-between gap-2">
+              <div class="font-semibold text-ink-100">{{ s.event.date }} | {{ s.event.id }}</div>
+              <div class="text-xs text-ink-400">割当メンバー数: {{ (s.members|length) if s.members else 0 }}</div>
+            </div>
+            <div class="mt-2 text-sm text-ink-300">
+              割当メンバー:
+              {% if s.members %}
+                <span class="text-ink-100">{{ s.members | join(", ") }}</span>
+              {% else %}
+                なし
+              {% endif %}
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-sm text-ink-300">割当案を生成できるイベントがありません。</p>
+    {% endif %}
+  {% endcall %}
+{% endblock %}
+

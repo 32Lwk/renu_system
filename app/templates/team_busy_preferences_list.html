@@ -1,0 +1,38 @@
+{% extends "_layout.html" %}
+{% from "_ui.html" import card, table_wrap %}
+
+{% block title %}自チームの繁忙期希望一覧 | ReNU{% endblock %}
+
+{% block content %}
+  {% call card("自チームの繁忙期希望一覧", "対象チーム: " ~ (teams | join(', '))) %}
+    {% if preferences %}
+      {% call table_wrap() %}
+        <thead>
+          <tr>
+            <th>メンバー</th>
+            <th>イベントID</th>
+            <th>希望役割</th>
+            <th>優先度</th>
+            <th>上限シフト数</th>
+            <th>備考</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in preferences %}
+            <tr>
+              <td class="min-w-[10rem]">{{ p.member_name }}</td>
+              <td class="whitespace-nowrap">{{ p.event_id }}</td>
+              <td class="whitespace-nowrap">{{ p.preferred_role }}</td>
+              <td class="whitespace-nowrap">{{ p.priority }}</td>
+              <td class="whitespace-nowrap">{{ p.max_shifts }}</td>
+              <td class="min-w-[12rem] break-words">{{ p.note }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      {% endcall %}
+    {% else %}
+      <p class="text-sm text-ink-300">自チームの繁忙期希望はまだ登録されていません。</p>
+    {% endif %}
+  {% endcall %}
+{% endblock %}
+

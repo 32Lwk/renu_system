@@ -1,0 +1,41 @@
+{% extends "_layout.html" %}
+{% from "_ui.html" import card, table_wrap %}
+
+{% block title %}提案詳細 {{ batch_id }} | ReNU 管理{% endblock %}
+
+{% block content %}
+  {% call card("提案バッチ: " ~ batch_id, "承認すると planned に確定、却下すると行を削除します") %}
+    {% call table_wrap() %}
+      <thead>
+        <tr>
+          <th>イベント</th>
+          <th>メンバー</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in rows %}
+          <tr>
+            <td class="min-w-[16rem]">
+              <div class="font-semibold text-ink-100">{{ r.event_name }}</div>
+              <div class="text-xs text-ink-400">{{ r.event_id }}</div>
+            </td>
+            <td class="min-w-[16rem]">
+              <div class="font-semibold text-ink-100">{{ r.member_name }}</div>
+              <div class="text-xs text-ink-400">{{ r.member_id }}</div>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    {% endcall %}
+
+    <div class="mt-4 flex flex-wrap gap-2">
+      <form method="post" action="/admin/assignment/proposals/{{ batch_id }}/approve" class="inline">
+        <button type="submit" class="ui-btn ui-btn-primary">承認（planned に確定）</button>
+      </form>
+      <form method="post" action="/admin/assignment/proposals/{{ batch_id }}/reject" class="inline" onsubmit="return confirm('却下して削除しますか？');">
+        <button type="submit" class="ui-btn ui-btn-ghost">却下（行を削除）</button>
+      </form>
+      <a class="ui-btn ui-btn-secondary" href="/admin/assignment/proposals">一覧へ</a>
+    </div>
+  {% endcall %}
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "_layout.html" %}
+{% from "_ui.html" import card, table_wrap %}
+
+{% block title %}割り当て提案の承認 | ReNU 管理{% endblock %}
+
+{% block content %}
+  {% call card("Leader からの割り当て提案", "承認/却下は詳細画面から行います") %}
+    {% if not summaries %}
+      <p class="text-sm text-ink-300">承認待ちの提案はありません。</p>
+    {% else %}
+      {% call table_wrap() %}
+        <thead>
+          <tr>
+            <th>バッチ</th>
+            <th>件数</th>
+            <th>提案者 (member_id)</th>
+            <th>例: イベント</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in summaries %}
+            <tr>
+              <td>
+                <code class="rounded bg-ink-800/60 px-2 py-0.5 text-ink-200">{{ s.batch_id }}</code>
+              </td>
+              <td class="whitespace-nowrap">{{ s.count }}</td>
+              <td class="whitespace-nowrap">{{ s.leader_member_id or "-" }}</td>
+              <td class="whitespace-nowrap">{{ s.sample_event }}</td>
+              <td class="whitespace-nowrap">
+                <a class="ui-btn ui-btn-secondary" href="/admin/assignment/proposals/{{ s.batch_id }}">詳細</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      {% endcall %}
+    {% endif %}
+  {% endcall %}
+{% endblock %}

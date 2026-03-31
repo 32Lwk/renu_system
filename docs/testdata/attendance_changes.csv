@@ -1,0 +1,11 @@
+change_id,changed_at,event_id,member_id,attendance_id,change_type,reason,source
+chg_0001,2026-03-30T13:45:46.776250+00:00,ev_20260331_1,mem_seed_001,att_0001,absent,体調不良のため,web-member
+chg_0002,2026-03-30T13:45:46.776250+00:00,ev_20260331_1,mem_seed_002,att_0002,absent,体調不良のため,web-member
+chg_0003,2026-03-30T13:45:46.776250+00:00,ev_20260331_1,mem_seed_003,att_0003,absent,体調不良のため,web-member
+chg_0004,2026-03-30T13:45:46.776250+00:00,ev_20260331_1,mem_seed_004,att_0004,absent,体調不良のため,web-member
+chg_0005,2026-03-30T13:45:46.776250+00:00,ev_20260331_1,mem_seed_005,att_0005,absent,体調不良のため,web-member
+chg_0006,2026-03-30T13:45:46.776250+00:00,ev_20260331_2,mem_seed_001,att_0006,absent,体調不良のため,web-member
+chg_0007,2026-03-30T13:45:46.776250+00:00,ev_20260331_2,mem_seed_002,att_0007,absent,体調不良のため,web-member
+chg_0008,2026-03-30T13:45:46.776250+00:00,ev_20260331_2,mem_seed_003,att_0008,absent,体調不良のため,web-member
+chg_0009,2026-03-30T13:45:46.776250+00:00,ev_20260331_2,mem_seed_004,att_0009,absent,体調不良のため,web-member
+chg_0010,2026-03-30T13:45:46.776250+00:00,ev_20260331_2,mem_seed_005,att_0010,absent,体調不良のため,web-member

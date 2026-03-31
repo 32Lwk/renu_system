@@ -1,0 +1,55 @@
+{% extends "_layout.html" %}
+{% from "_ui.html" import card, field_label, input, select %}
+
+{% block title %}{% if mode == 'new' %}イベント新規{% else %}イベント編集{% endif %} | ReNU{% endblock %}
+
+{% block content %}
+  {% call card("{% if mode == 'new' %}イベント新規{% else %}イベント編集{% endif %}", "対象チームのイベント情報を編集します") %}
+    <form method="post" action="{% if mode == 'new' %}/my/team/events/new{% else %}/my/team/events/{{ event.event_id }}/edit{% endif %}" class="grid gap-3 max-w-xl">
+      <div class="grid gap-3 sm:grid-cols-3">
+        <div class="ui-field sm:col-span-1">
+          {{ field_label("date", "日付") }}
+          <input id="date" class="ui-input" type="date" name="date" required value="{{ event.date or '' }}" />
+        </div>
+        <div class="ui-field">
+          {{ field_label("start_time", "開始") }}
+          <input id="start_time" class="ui-input" type="time" name="start_time" required value="{{ event.start_time or '' }}" />
+        </div>
+        <div class="ui-field">
+          {{ field_label("end_time", "終了") }}
+          <input id="end_time" class="ui-input" type="time" name="end_time" required value="{{ event.end_time or '' }}" />
+        </div>
+      </div>
+
+      <div class="ui-field">
+        {{ field_label("name", "イベント名") }}
+        <input id="name" class="ui-input" type="text" name="name" required value="{{ event.name or '' }}" />
+      </div>
+
+      <div class="grid gap-3 sm:grid-cols-2">
+        <div class="ui-field">
+          {{ field_label("required_members", "必要人数") }}
+          <input id="required_members" class="ui-input" type="number" name="required_members" min="1" value="{{ event.required_members or 3 }}" />
+        </div>
+        <div class="ui-field">
+          {{ field_label("target_team", "対象チーム（1つ）") }}
+          {% call select("target_team", "target_team") %}
+            {% for t in teams %}
+              <option value="{{ t }}" {% if event.target_teams and (event.target_teams|string).split(',')[0]|trim == t %}selected{% endif %}>{{ t }}</option>
+            {% endfor %}
+          {% endcall %}
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <input id="is_busy_season" type="checkbox" name="is_busy_season" value="true" class="h-4 w-4 accent-emerald-400" {% if event.is_busy_season and event.is_busy_season|string|lower in ['true','1','yes'] %}checked{% endif %} />
+        <label for="is_busy_season" class="text-sm text-ink-200">繁忙期</label>
+      </div>
+
+      <div class="flex flex-wrap gap-2">
+        <button type="submit" class="ui-btn ui-btn-primary">保存</button>
+        <a class="ui-btn ui-btn-secondary" href="/my/team/events">一覧へ</a>
+      </div>
+    </form>
+  {% endcall %}
+{% endblock %}

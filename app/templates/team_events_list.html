@@ -1,0 +1,47 @@
+{% extends "_layout.html" %}
+{% from "_ui.html" import card, table_wrap %}
+
+{% block title %}自チームイベント | ReNU{% endblock %}
+
+{% block content %}
+  {% call card("自チームイベント", "イベントの作成・編集・参加者管理ができます") %}
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <div class="text-sm text-ink-400">管理対象チーム: {{ managed_teams | join(", ") }}</div>
+      <a class="ui-btn ui-btn-primary" href="/my/team/events/new">新規イベント</a>
+    </div>
+
+    <div class="mt-4">
+      {% if not events %}
+        <p class="text-sm text-ink-300">管理対象チーム向けのイベントはまだありません。</p>
+      {% else %}
+        {% call table_wrap() %}
+          <thead>
+            <tr>
+              <th>日付</th>
+              <th>時間</th>
+              <th>名前</th>
+              <th>対象チーム</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for e in events %}
+              <tr>
+                <td class="whitespace-nowrap">{{ e.date or "-" }}</td>
+                <td class="whitespace-nowrap">{{ e.start_time or "" }}–{{ e.end_time or "" }}</td>
+                <td class="min-w-[14rem]">{{ e.name or "" }}</td>
+                <td class="whitespace-nowrap">{{ e.target_teams or "" }}</td>
+                <td class="whitespace-nowrap">
+                  <div class="flex flex-wrap gap-2">
+                    <a class="ui-btn ui-btn-secondary" href="/my/team/events/{{ e.event_id }}/edit">編集</a>
+                    <a class="ui-btn ui-btn-ghost" href="/my/team/events/{{ e.event_id }}/attendances">参加者</a>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        {% endcall %}
+      {% endif %}
+    </div>
+  {% endcall %}
+{% endblock %}

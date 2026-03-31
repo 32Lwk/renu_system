@@ -1,0 +1,58 @@
+{% extends "_layout.html" %}
+{% from "_ui.html" import card, field_label, input, select %}
+
+{% block title %}{% if mode == 'new' %}新規メンバー{% else %}メンバー編集{% endif %} | ReNU 管理{% endblock %}
+
+{% block content %}
+  {% call card("メンバー管理", "{% if mode == 'new' %}新規メンバーを作成{% else %}メンバー情報を編集{% endif %}") %}
+    <form method="post" action="{% if mode == 'new' %}/admin/members/new{% else %}/admin/members/{{ member.member_id }}/edit{% endif %}" class="grid gap-3 max-w-xl">
+      <div class="ui-field">
+        {{ field_label("full_name", "氏名") }}
+        {{ input("full_name", "full_name", required=true, value=member.full_name or "") }}
+      </div>
+
+      <div class="ui-field">
+        {{ field_label("grade", "学年") }}
+        {% call select("grade", "grade") %}
+          {% set g = member.grade or 'B1' %}
+          <option value="B1" {% if g=='B1' %}selected{% endif %}>B1</option>
+          <option value="B2" {% if g=='B2' %}selected{% endif %}>B2</option>
+          <option value="B3" {% if g=='B3' %}selected{% endif %}>B3</option>
+        {% endcall %}
+      </div>
+
+      <div class="ui-field">
+        {{ field_label("email", "メール（任意）") }}
+        {{ input("email", "email", type="email", value=member.email or "", autocomplete="email") }}
+      </div>
+
+      <div class="ui-field">
+        {{ field_label("teams", "所属班（カンマ区切り）") }}
+        {{ input("teams", "teams", value=member.teams or "", placeholder="例: すまい,PC") }}
+      </div>
+
+      <div class="ui-field">
+        {{ field_label("roles", "役職（カンマ区切り）") }}
+        {{ input("roles", "roles", value=member.roles or "", placeholder="例: Leader,Member") }}
+      </div>
+
+      <div class="ui-field">
+        {{ field_label("status", "ステータス") }}
+        {% call select("status", "status") %}
+          {% set s = member.status or 'active' %}
+          <option value="pending" {% if s=='pending' %}selected{% endif %}>pending</option>
+          <option value="email_verified" {% if s=='email_verified' %}selected{% endif %}>email_verified</option>
+          <option value="merge_pending" {% if s=='merge_pending' %}selected{% endif %}>merge_pending</option>
+          <option value="active" {% if s=='active' %}selected{% endif %}>active</option>
+          <option value="inactive" {% if s=='inactive' %}selected{% endif %}>inactive</option>
+        {% endcall %}
+      </div>
+
+      <div class="flex flex-wrap gap-2">
+        <button class="ui-btn ui-btn-primary" type="submit">保存</button>
+        <a class="ui-btn ui-btn-secondary" href="/admin/members">一覧へ戻る</a>
+      </div>
+    </form>
+  {% endcall %}
+{% endblock %}
+

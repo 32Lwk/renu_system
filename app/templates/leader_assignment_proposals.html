@@ -1,0 +1,57 @@
+{% extends "_layout.html" %}
+{% from "_ui.html" import card %}
+
+{% block title %}割り当て案の提案 | ReNU{% endblock %}
+
+{% block content %}
+  {% call card("出勤割り当て案（提案）", "繁忙期イベントに対して自チームの出勤案を管理者へ提案します") %}
+    <p class="text-sm text-ink-300">
+      承認後に <code class="rounded bg-ink-800/60 px-2 py-0.5 text-ink-200">planned</code> として確定されます。
+    </p>
+
+    {% if not event_blocks %}
+      <p class="mt-4 text-sm text-ink-300">
+        対象イベントがありません。イベントを繁忙期にし、対象チームにあなたの Leader チームが含まれるようにしてください。
+      </p>
+    {% else %}
+      <form method="post" action="/my/team/assignment/proposals" class="mt-4 space-y-6">
+        {% for block in event_blocks %}
+          {% set ev = block.event %}
+          <div class="rounded-xl border border-ink-700/40 bg-ink-950/40 p-3">
+            <div class="flex flex-wrap items-baseline justify-between gap-2">
+              <div class="font-semibold text-ink-100">{{ ev.name or ev.event_id }}</div>
+              <div class="text-xs text-ink-400">{{ ev.date }} {{ ev.start_time }}–{{ ev.end_time }}</div>
+            </div>
+            <div class="mt-1 text-xs text-ink-400">
+              event_id:
+              <code class="rounded bg-ink-800/60 px-2 py-0.5 text-ink-200">{{ ev.event_id }}</code>
+            </div>
+
+            {% if not block.candidates %}
+              <p class="mt-3 text-sm text-ink-300">候補メンバーがいません。</p>
+            {% else %}
+              <ul class="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                {% for m in block.candidates %}
+                  <li class="rounded-lg border border-ink-700/40 bg-ink-900/20 p-2">
+                    <label class="flex items-start gap-2 text-sm">
+                      <input type="checkbox" name="assign" value="{{ ev.event_id }}|{{ m.member_id }}" class="mt-0.5 h-4 w-4 accent-emerald-400" />
+                      <span class="min-w-0">
+                        <span class="block font-semibold text-ink-100">{{ m.full_name or m.member_id }}</span>
+                        <span class="block text-xs text-ink-400">{{ m.member_id }}</span>
+                      </span>
+                    </label>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+        {% endfor %}
+
+        <div class="flex flex-wrap gap-2">
+          <button type="submit" class="ui-btn ui-btn-primary">この内容で提案する</button>
+          <a class="ui-btn ui-btn-secondary" href="/my">マイページへ</a>
+        </div>
+      </form>
+    {% endif %}
+  {% endcall %}
+{% endblock %}

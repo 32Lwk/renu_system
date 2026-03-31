@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}ReNU{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                50: "#ecfdf5",
+                100: "#d1fae5",
+                200: "#a7f3d0",
+                300: "#6ee7b7",
+                400: "#34d399",
+                500: "#22c55e",
+                600: "#16a34a",
+                700: "#15803d",
+                800: "#166534",
+                900: "#14532d"
+              },
+              ink: {
+                50: "#f8fafc",
+                100: "#f1f5f9",
+                200: "#e2e8f0",
+                300: "#cbd5e1",
+                400: "#94a3b8",
+                500: "#64748b",
+                600: "#475569",
+                700: "#334155",
+                800: "#1e293b",
+                900: "#0f172a",
+                950: "#020617"
+              }
+            },
+            boxShadow: {
+              glow: "0 18px 45px rgba(15, 23, 42, 0.65)"
+            }
+          }
+        }
+      };
+    </script>
+
+    <link rel="stylesheet" href="/static/base.css" />
+    <link rel="stylesheet" href="/static/ui.css" />
+    {% block head %}{% endblock %}
+  </head>
+
+  <body class="min-h-screen bg-ink-900 text-ink-100">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-ink-950 focus:px-4 focus:py-2 focus:text-sm focus:text-ink-100 focus:outline-none focus:ring-2 focus:ring-brand-400">
+      本文へスキップ
+    </a>
+    {% set p = request.url.path if request is defined else '' %}
+    {% set is_admin = p.startswith('/admin') %}
+    {% set is_member = p.startswith('/my') or p.startswith('/onboarding') %}
+    {% set is_public = not is_admin and not is_member %}
+
+    <header class="border-b border-ink-800 bg-ink-950/85 backdrop-blur">
+      <div class="mx-auto flex max-w-5xl flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="min-w-0">
+          <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <a href="/" class="text-base font-semibold tracking-tight">ReNU 勤怠・シフト管理</a>
+            <span class="text-xs text-ink-400">
+              {% if is_admin %}管理{% elif is_member %}メンバー{% else %}トップ{% endif %}
+            </span>
+          </div>
+          {% block subtitle %}{% endblock %}
+        </div>
+
+        <nav class="flex flex-wrap items-center gap-2">
+          {% if is_admin %}
+            <a class="ui-btn ui-btn-secondary" href="/admin">ダッシュボード</a>
+            <a class="ui-btn ui-btn-secondary" href="/admin/members">メンバー</a>
+            <a class="ui-btn ui-btn-secondary" href="/admin/busy/summary">繁忙期集計</a>
+            <a class="ui-btn ui-btn-secondary" href="/admin/assignment/proposals">割当提案</a>
+            <a class="ui-btn ui-btn-secondary" href="/admin/notifications">一斉通知</a>
+            <a class="ui-btn ui-btn-ghost" href="/admin/logout">ログアウト</a>
+          {% elif is_member %}
+            <a class="ui-btn ui-btn-secondary" href="/my">マイページ</a>
+            <a class="ui-btn ui-btn-secondary" href="/my/events">出勤予定</a>
+            <a class="ui-btn ui-btn-secondary" href="/my/busy/preferences">繁忙期希望</a>
+            <a class="ui-btn ui-btn-ghost" href="/auth/logout">ログアウト</a>
+          {% else %}
+            <a class="ui-btn ui-btn-secondary" href="/admin/login">管理者ログイン</a>
+          {% endif %}
+          {% block header_actions %}{% endblock %}
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content" class="mx-auto max-w-5xl px-4 py-6 sm:py-10">
+      {% if error %}
+        <div class="ui-alert ui-alert-error" role="alert">{{ error }}</div>
+      {% endif %}
+      {% if info %}
+        <div class="ui-alert ui-alert-info" role="status">{{ info }}</div>
+      {% endif %}
+      {% if message %}
+        <div class="ui-alert ui-alert-info" role="status">{{ message }}</div>
+      {% endif %}
+      {% block content %}{% endblock %}
+    </main>
+
+    <script>
+      // 送信中の二重送信防止（JSが無い環境でも動作は維持）
+      document.addEventListener("submit", (e) => {
+        const form = e.target;
+        if (!(form instanceof HTMLFormElement)) return;
+        const submit = form.querySelector('button[type="submit"], input[type="submit"]');
+        if (!submit) return;
+        submit.disabled = true;
+        submit.setAttribute("aria-disabled", "true");
+        submit.dataset.originalText = submit.textContent || "";
+        if (submit.tagName.toLowerCase() === "button") {
+          submit.textContent = "送信中…";
+        }
+      }, true);
+    </script>
+  </body>
+</html>
+

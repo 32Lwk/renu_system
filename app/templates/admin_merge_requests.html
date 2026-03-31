@@ -1,0 +1,45 @@
+{% extends "_layout.html" %}
+{% from "_ui.html" import card, table_wrap %}
+
+{% block title %}承認待ち（統合） | ReNU 管理{% endblock %}
+
+{% block content %}
+  {% call card("merge_pending 一覧", "同一人物の可能性があるレコードを統合します") %}
+    {% if requests %}
+      {% call table_wrap() %}
+        <thead>
+          <tr>
+            <th>氏名</th>
+            <th>学籍番号</th>
+            <th>メール</th>
+            <th>Discord</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in requests %}
+            <tr>
+              <td class="min-w-[10rem]">{{ r.full_name }}</td>
+              <td class="whitespace-nowrap">{{ r.student_id }}</td>
+              <td class="min-w-[12rem] break-words">{{ r.email }}</td>
+              <td class="min-w-[12rem] break-words">{{ r.discord_username }}</td>
+              <td class="whitespace-nowrap">
+                <div class="flex flex-wrap gap-2">
+                  <form method="post" action="/admin/merge-requests/{{ r.member_id }}/approve" class="inline">
+                    <button class="ui-btn ui-btn-primary" type="submit">承認</button>
+                  </form>
+                  <form method="post" action="/admin/merge-requests/{{ r.member_id }}/reject" class="inline">
+                    <button class="ui-btn ui-btn-ghost" type="submit">却下</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      {% endcall %}
+    {% else %}
+      <p class="text-sm text-ink-300">承認待ちはありません。</p>
+    {% endif %}
+  {% endcall %}
+{% endblock %}
+

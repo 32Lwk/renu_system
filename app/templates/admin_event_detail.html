@@ -1,0 +1,45 @@
+{% extends "_layout.html" %}
+{% from "_ui.html" import card, table_wrap %}
+
+{% block title %}イベント詳細 | ReNU 管理{% endblock %}
+
+{% block content %}
+  {% call card("イベント詳細（出勤管理）", "出勤状態の更新ができます") %}
+    {% if attendees %}
+      {% call table_wrap() %}
+        <thead>
+          <tr>
+            <th>メンバー</th>
+            <th class="min-w-[22rem]">状態（更新）</th>
+            <th>役割</th>
+            <th>備考</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in attendees %}
+            <tr>
+              <td class="min-w-[10rem]">{{ a.member_name }}</td>
+              <td>
+                <form method="post" action="/admin/attendances/{{ a.attendance_id }}/status" class="flex flex-wrap items-center gap-2">
+                  <select name="status_value" class="ui-select w-auto">
+                    <option value="planned" {% if a.status == 'planned' %}selected{% endif %}>出勤予定</option>
+                    <option value="absent" {% if a.status == 'absent' %}selected{% endif %}>欠席</option>
+                    <option value="late" {% if a.status == 'late' %}selected{% endif %}>遅刻</option>
+                    <option value="leave_early" {% if a.status == 'leave_early' %}selected{% endif %}>早退</option>
+                  </select>
+                  <input class="ui-input w-[18rem]" type="text" name="note" value="{{ a.note or '' }}" placeholder="備考（任意）" />
+                  <button class="ui-btn ui-btn-primary" type="submit">更新</button>
+                </form>
+              </td>
+              <td class="whitespace-nowrap">{{ a.role_name or '-' }}</td>
+              <td class="min-w-[12rem] break-words">{{ a.note or '-' }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      {% endcall %}
+    {% else %}
+      <p class="text-sm text-ink-300">出勤者がまだ登録されていません。</p>
+    {% endif %}
+  {% endcall %}
+{% endblock %}
+

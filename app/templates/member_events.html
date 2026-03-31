@@ -1,0 +1,78 @@
+{% extends "_layout.html" %}
+{% from "_ui.html" import card, table_wrap %}
+
+{% block title %}自分の出勤予定 | ReNU{% endblock %}
+
+{% block content %}
+  {% call card("出勤イベント一覧") %}
+    {% if events %}
+      <div class="space-y-3 sm:hidden">
+        {% for e in events %}
+          <div class="rounded-xl border border-ink-700/40 bg-ink-950/40 p-3">
+            <div class="flex flex-wrap items-baseline justify-between gap-2">
+              <div class="text-sm font-semibold text-ink-100">{{ e.event_name }}</div>
+              <div class="text-xs text-ink-400">{{ e.date }} {{ e.start_time }}〜{{ e.end_time }}</div>
+            </div>
+            <form method="post" action="/my/attendances/{{ e.attendance_id }}/change" class="mt-3 grid gap-2">
+              <div class="grid gap-2 sm:grid-cols-2">
+                <div class="ui-field">
+                  <label class="ui-label" for="status_{{ e.attendance_id }}">状態</label>
+                  <select id="status_{{ e.attendance_id }}" name="status_value" class="ui-select">
+                    <option value="planned" {% if e.status == 'planned' %}selected{% endif %}>出勤予定</option>
+                    <option value="absent" {% if e.status == 'absent' %}selected{% endif %}>欠席</option>
+                    <option value="late" {% if e.status == 'late' %}selected{% endif %}>遅刻</option>
+                    <option value="leave_early" {% if e.status == 'leave_early' %}selected{% endif %}>早退</option>
+                  </select>
+                </div>
+                <div class="ui-field">
+                  <label class="ui-label" for="reason_{{ e.attendance_id }}">理由（任意）</label>
+                  <input id="reason_{{ e.attendance_id }}" class="ui-input" type="text" name="reason" value="{{ e.note or '' }}" placeholder="例: 体調不良のため" />
+                </div>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <button class="ui-btn ui-btn-primary" type="submit">申請する</button>
+              </div>
+            </form>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="hidden sm:block">
+        {% call table_wrap() %}
+          <thead>
+            <tr>
+              <th>日付</th>
+              <th>時間</th>
+              <th>イベント名</th>
+              <th class="min-w-[22rem]">状態 / 変更</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for e in events %}
+              <tr>
+                <td class="whitespace-nowrap">{{ e.date }}</td>
+                <td class="whitespace-nowrap">{{ e.start_time }}〜{{ e.end_time }}</td>
+                <td class="min-w-[14rem]">{{ e.event_name }}</td>
+                <td>
+                  <form method="post" action="/my/attendances/{{ e.attendance_id }}/change" class="flex flex-wrap items-center gap-2">
+                    <select name="status_value" class="ui-select w-auto">
+                      <option value="planned" {% if e.status == 'planned' %}selected{% endif %}>出勤予定</option>
+                      <option value="absent" {% if e.status == 'absent' %}selected{% endif %}>欠席</option>
+                      <option value="late" {% if e.status == 'late' %}selected{% endif %}>遅刻</option>
+                      <option value="leave_early" {% if e.status == 'leave_early' %}selected{% endif %}>早退</option>
+                    </select>
+                    <input class="ui-input w-[18rem]" type="text" name="reason" value="{{ e.note or '' }}" placeholder="理由（任意）" />
+                    <button class="ui-btn ui-btn-primary" type="submit">申請</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        {% endcall %}
+      </div>
+    {% else %}
+      <p class="text-sm text-ink-300">出勤予定のイベントがまだありません。</p>
+    {% endif %}
+  {% endcall %}
+{% endblock %}
+

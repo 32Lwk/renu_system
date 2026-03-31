@@ -1,0 +1,25 @@
+{% extends "_layout.html" %}
+{% from "_ui.html" import card, field_label, input %}
+
+{% block title %}コード確認 | ReNU{% endblock %}
+
+{% block content %}
+  {% call card("6桁コードを入力", "メールに届いた認証コードを入力してください") %}
+    <form method="post" action="/onboarding/verify" class="grid gap-3 max-w-md">
+      <div class="ui-field">
+        {{ field_label("email", "メールアドレス") }}
+        {{ input("email", "email", type="email", required=true, autocomplete="email") }}
+      </div>
+      <div class="ui-field">
+        {{ field_label("code", "認証コード（6桁）") }}
+        {{ input("code", "code", type="text", required=true, placeholder="123456", inputmode="numeric", pattern="[0-9]{6}", maxlength="6", autocomplete="one-time-code") }}
+        <div class="ui-hint">数字6桁のみ。コピー&ペーストでもOKです。</div>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button type="submit" class="ui-btn ui-btn-primary">確認</button>
+        <a class="ui-btn ui-btn-secondary" href="/onboarding/email">メール送信へ戻る</a>
+      </div>
+    </form>
+  {% endcall %}
+{% endblock %}
+

@@ -1,0 +1,26 @@
+{% extends "_layout.html" %}
+{% from "_ui.html" import card, field_label, select %}
+
+{% block title %}{{ title or "開発用テストログイン | ReNU" }}{% endblock %}
+
+{% block content %}
+  {% call card("開発用テストログイン", "開発専用: テストデータのメンバーを選択してログインします") %}
+    <form method="post" class="grid gap-3 max-w-2xl">
+      <div class="ui-field">
+        {{ field_label("member_id", "メンバー") }}
+        {% call select("member_id", "member_id") %}
+          {% for m in members %}
+            <option value="{{ m.id }}">
+              {{ m.name }}（学年: {{ m.grade }} / ロール: {{ m.roles or 'なし' }} / チーム: {{ m.teams or 'なし' }} / ID: {{ m.id }}）
+            </option>
+          {% endfor %}
+        {% endcall %}
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button class="ui-btn ui-btn-primary" type="submit">このメンバーでログイン</button>
+        <a class="ui-btn ui-btn-secondary" href="/">トップへ戻る</a>
+      </div>
+    </form>
+  {% endcall %}
+{% endblock %}
+

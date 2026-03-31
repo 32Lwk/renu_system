@@ -1,0 +1,39 @@
+{% extends "_layout.html" %}
+{% from "_ui.html" import card %}
+
+{% block title %}マイページ | ReNU{% endblock %}
+
+{% block content %}
+  {% call card("マイページ") %}
+    <div class="flex flex-col gap-1">
+      <p class="text-sm text-ink-300">
+        ようこそ、
+        <span class="font-semibold text-ink-100">{{ member.full_name or "メンバー" }}</span>
+        さん
+      </p>
+      <p class="text-sm text-ink-300">
+        学年: <span class="text-ink-100">{{ member.grade or "-" }}</span>
+        / チーム: <span class="text-ink-100 break-words">{{ member.teams or "-" }}</span>
+        / ロール: <span class="text-ink-100 break-words">{{ member.roles or "-" }}</span>
+      </p>
+    </div>
+
+    <div class="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+      <a class="ui-btn ui-btn-primary justify-center" href="/my/events">自分の出勤予定を見る</a>
+      <a class="ui-btn ui-btn-secondary justify-center" href="/my/busy/preferences">繁忙期の希望を登録する</a>
+      <a class="ui-btn ui-btn-secondary justify-center" href="/my/busy/preferences/list">自分の繁忙期希望の一覧</a>
+
+      {% if overall_role >= 1 %}
+        <a class="ui-btn ui-btn-secondary justify-center" href="/my/team/busy/preferences">自チームの希望一覧</a>
+      {% endif %}
+      {% if overall_role >= 2 %}
+        <a class="ui-btn ui-btn-secondary justify-center" href="/my/team/events">自チームイベントの作成・編集</a>
+        <a class="ui-btn ui-btn-secondary justify-center" href="/my/team/notifications">チーム向け一斉通知（メール / Discord）</a>
+      {% endif %}
+      {% if overall_role >= 3 %}
+        <a class="ui-btn ui-btn-secondary justify-center" href="/my/team/assignment/proposals">自チーム割り当て案の作成・提案</a>
+      {% endif %}
+    </div>
+  {% endcall %}
+{% endblock %}
+

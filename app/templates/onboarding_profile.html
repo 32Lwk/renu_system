@@ -1,0 +1,60 @@
+{% extends "_layout.html" %}
+{% from "_ui.html" import card, field_label, input, select %}
+
+{% block title %}プロフィール登録 | ReNU{% endblock %}
+
+{% block content %}
+  {% call card("学籍番号・氏名の登録", "入力内容はあとで管理者の承認に使われます") %}
+    <form method="post" action="/onboarding/profile" class="grid gap-3 max-w-xl">
+      <div class="ui-field">
+        {{ field_label("full_name", "氏名") }}
+        {{ input("full_name", "full_name", required=true, autocomplete="name") }}
+      </div>
+
+      <div class="ui-field">
+        {{ field_label("student_id", "学籍番号（9桁）") }}
+        {{ input("student_id", "student_id", required=true, placeholder="例: 012400001", inputmode="numeric", pattern="\\d{9}", maxlength="9") }}
+        <div class="ui-hint">数字9桁（例: 学部学科2桁 + 入学年度2桁 + 任意5桁）</div>
+      </div>
+
+      <div class="grid gap-3 sm:grid-cols-2">
+        <div class="ui-field">
+          {{ field_label("faculty_code", "学部コード") }}
+          {% call select("faculty_code", "faculty_code") %}
+            <option value="">選択してください</option>
+            <option value="01">01</option>
+            <option value="02">02</option>
+            <option value="03">03</option>
+            <option value="04">04</option>
+            <option value="05">05</option>
+            <option value="06">06</option>
+            <option value="07">07</option>
+            <option value="08">08</option>
+            <option value="09">09</option>
+            <option value="17">17</option>
+          {% endcall %}
+        </div>
+
+        <div class="ui-field">
+          {{ field_label("entrance_year", "入学年度（下2桁）") }}
+          {{ input("entrance_year", "entrance_year", required=true, placeholder="例: 24", inputmode="numeric", pattern="\\d{2}", maxlength="2") }}
+        </div>
+      </div>
+
+      <div class="ui-field">
+        {{ field_label("grade", "学年") }}
+        {% call select("grade", "grade") %}
+          <option value="B1">B1</option>
+          <option value="B2">B2</option>
+          <option value="B3">B3</option>
+        {% endcall %}
+      </div>
+
+      <div class="flex flex-wrap gap-2">
+        <button type="submit" class="ui-btn ui-btn-primary">登録</button>
+        <a class="ui-btn ui-btn-secondary" href="/onboarding/verify">コード確認へ戻る</a>
+      </div>
+    </form>
+  {% endcall %}
+{% endblock %}
+

@@ -1,0 +1,42 @@
+{% extends "_layout.html" %}
+{% from "_ui.html" import card, field_label, input %}
+
+{% block title %}繁忙期希望入力 | ReNU{% endblock %}
+
+{% block content %}
+  {% call card("希望を登録", "イベントIDは管理者から案内された値を入力してください（今後、選択式に改善予定）") %}
+    <form method="post" action="/my/busy/preferences" class="grid gap-3 max-w-xl">
+      <div class="ui-field">
+        {{ field_label("event_id", "イベントID") }}
+        {{ input("event_id", "event_id", required=true, placeholder="例: ev_xxxxxxxx") }}
+      </div>
+
+      <div class="ui-field">
+        {{ field_label("preferred_role", "希望役割（任意）") }}
+        {{ input("preferred_role", "preferred_role", placeholder="例: 受付") }}
+      </div>
+
+      <div class="grid gap-3 sm:grid-cols-2">
+        <div class="ui-field">
+          {{ field_label("priority", "優先度（1が高い）") }}
+          <input id="priority" name="priority" class="ui-input" type="number" min="1" max="5" value="3" />
+        </div>
+        <div class="ui-field">
+          {{ field_label("max_shifts", "上限シフト数") }}
+          <input id="max_shifts" name="max_shifts" class="ui-input" type="number" min="0" max="20" value="5" />
+        </div>
+      </div>
+
+      <div class="ui-field">
+        {{ field_label("note", "備考（任意）") }}
+        {{ input("note", "note", placeholder="例: 午前のみ可") }}
+      </div>
+
+      <div class="flex flex-wrap gap-2">
+        <button class="ui-btn ui-btn-primary" type="submit">保存</button>
+        <a class="ui-btn ui-btn-secondary" href="/my/busy/preferences/list">自分の希望一覧へ</a>
+      </div>
+    </form>
+  {% endcall %}
+{% endblock %}
+

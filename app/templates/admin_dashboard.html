@@ -1,0 +1,47 @@
+{% extends "_layout.html" %}
+{% from "_ui.html" import card, table_wrap %}
+
+{% block title %}管理ダッシュボード | ReNU{% endblock %}
+
+{% block content %}
+  {% call card("管理メニュー", "よく使う機能へのショートカット") %}
+    <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+      <a class="ui-btn ui-btn-secondary justify-center" href="#events">イベント一覧（下）</a>
+      <a class="ui-btn ui-btn-secondary justify-center" href="/admin/members">メンバー一覧</a>
+      <a class="ui-btn ui-btn-secondary justify-center" href="/admin/busy/summary">繁忙期希望の集計</a>
+      <a class="ui-btn ui-btn-secondary justify-center" href="/admin/busy/preview">割当プレビュー</a>
+      <a class="ui-btn ui-btn-secondary justify-center" href="/admin/assignment/proposals">割当提案の承認</a>
+      <a class="ui-btn ui-btn-primary justify-center" href="/admin/notifications">一斉通知（メール / Discord）</a>
+    </div>
+  {% endcall %}
+
+  <div class="mt-5">
+    {% call card("今後のイベント一覧") %}
+      {% if events %}
+        {% call table_wrap() %}
+          <thead>
+            <tr>
+              <th>日付</th>
+              <th>時間</th>
+              <th>イベント名</th>
+              <th class="text-right">必要人数</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for e in events %}
+              <tr>
+                <td class="whitespace-nowrap">{{ e.date }}</td>
+                <td class="whitespace-nowrap">{{ e.start_time }}〜{{ e.end_time }}</td>
+                <td class="min-w-[14rem]">{{ e.name }}</td>
+                <td class="text-right">{{ e.required_members or '-' }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        {% endcall %}
+      {% else %}
+        <p class="text-sm text-ink-300">表示できるイベントがまだありません。</p>
+      {% endif %}
+    {% endcall %}
+  </div>
+{% endblock %}
+

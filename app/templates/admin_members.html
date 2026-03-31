@@ -1,0 +1,82 @@
+{% extends "_layout.html" %}
+{% from "_ui.html" import card, field_label, input, table_wrap %}
+
+{% block title %}メンバー一覧 | ReNU 管理{% endblock %}
+
+{% block content %}
+  {% call card("メンバー一覧", "学部学科コード・学年・ロールで絞り込みできます") %}
+    <form method="get" action="/admin/members" class="grid gap-3 md:grid-cols-4 md:items-end">
+      <div class="ui-field">
+        {{ field_label("f_faculty", "学部学科コード") }}
+        {{ input("f_faculty", "faculty", value=filter_faculty or "", placeholder="例: 02", inputmode="numeric", pattern="\\d{2}", maxlength="2") }}
+      </div>
+      <div class="ui-field">
+        {{ field_label("f_grade", "学年") }}
+        {{ input("f_grade", "grade", value=filter_grade or "", placeholder="例: B2") }}
+      </div>
+      <div class="ui-field">
+        {{ field_label("f_role", "ロール") }}
+        {{ input("f_role", "role", value=filter_role or "", placeholder="例: Leader") }}
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button class="ui-btn ui-btn-primary" type="submit">絞り込み</button>
+        <a class="ui-btn ui-btn-secondary" href="/admin/members">条件クリア</a>
+      </div>
+    </form>
+
+    <div class="mt-4 flex flex-wrap items-center justify-between gap-2">
+      <div class="text-sm text-ink-400">
+        ロールはカンマ区切りのいずれかに一致、または先頭一致（例: <code class="rounded bg-ink-800/60 px-2 py-0.5">Leader</code>、<code class="rounded bg-ink-800/60 px-2 py-0.5">App</code>）。
+      </div>
+      <a class="ui-btn ui-btn-primary" href="/admin/members/new">新規メンバー作成</a>
+    </div>
+
+    <div class="mt-4">
+      {% if members %}
+        {% call table_wrap() %}
+          <thead>
+            <tr>
+              <th>名前</th>
+              <th>学部</th>
+              <th>学年</th>
+              <th>ロール</th>
+              <th>班</th>
+              <th>状態</th>
+              <th>メール</th>
+              <th>Discord</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for m in members %}
+              <tr>
+                <td class="min-w-[10rem]">{{ m.name }}</td>
+                <td class="whitespace-nowrap">{{ m.faculty_code or '-' }}</td>
+                <td class="whitespace-nowrap">{{ m.grade }}</td>
+                <td class="min-w-[12rem] break-words">{{ m.roles or '-' }}</td>
+                <td class="min-w-[10rem] break-words">{{ m.teams if m.teams is defined else '-' }}</td>
+                <td class="whitespace-nowrap">{{ m.status if m.status is defined else '-' }}</td>
+                <td class="min-w-[12rem] break-words">{{ m.email or '-' }}</td>
+                <td class="min-w-[10rem] break-words">{{ m.discord_id or '-' }}</td>
+                <td class="whitespace-nowrap">
+                  {% if m.member_id %}
+                    <div class="flex flex-wrap gap-2">
+                      <a class="ui-btn ui-btn-secondary" href="/admin/members/{{ m.member_id }}/edit">編集</a>
+                      <form method="post" action="/admin/members/{{ m.member_id }}/deactivate" class="inline">
+                        <button class="ui-btn ui-btn-ghost" type="submit">無効化</button>
+                      </form>
+                    </div>
+                  {% else %}
+                    <span class="text-xs text-ink-500">mockdb</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        {% endcall %}
+      {% else %}
+        <p class="text-sm text-ink-300">条件に一致するメンバーはいません（または未登録です）。</p>
+      {% endif %}
+    </div>
+  {% endcall %}
+{% endblock %}

@@ -1,0 +1,61 @@
+{% macro card(title=None, subtitle=None) -%}
+  <section class="ui-card">
+    <div class="ui-card-inner">
+      {% if title %}
+        <h2 class="text-lg font-semibold tracking-tight text-ink-100">{{ title }}</h2>
+      {% endif %}
+      {% if subtitle %}
+        <p class="mt-1 text-sm text-ink-400">{{ subtitle }}</p>
+      {% endif %}
+      <div class="{% if title or subtitle %}mt-4{% endif %}">
+        {{ caller() }}
+      </div>
+    </div>
+  </section>
+{%- endmacro %}
+
+{% macro field_label(for_id, text) -%}
+  <label for="{{ for_id }}" class="ui-label">{{ text }}</label>
+{%- endmacro %}
+
+{% macro input(id, name, type="text", value="", placeholder="", required=false, autocomplete="", inputmode="", pattern="", maxlength="") -%}
+  <input
+    id="{{ id }}"
+    name="{{ name }}"
+    type="{{ type }}"
+    class="ui-input"
+    {% if value is not none %}value="{{ value }}"{% endif %}
+    {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+    {% if required %}required{% endif %}
+    {% if autocomplete %}autocomplete="{{ autocomplete }}"{% endif %}
+    {% if inputmode %}inputmode="{{ inputmode }}"{% endif %}
+    {% if pattern %}pattern="{{ pattern }}"{% endif %}
+    {% if maxlength %}maxlength="{{ maxlength }}"{% endif %}
+  />
+{%- endmacro %}
+
+{% macro textarea(id, name, value="", placeholder="", rows=6, required=false) -%}
+  <textarea
+    id="{{ id }}"
+    name="{{ name }}"
+    class="ui-textarea"
+    rows="{{ rows }}"
+    {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+    {% if required %}required{% endif %}
+  >{{ value }}</textarea>
+{%- endmacro %}
+
+{% macro select(id, name) -%}
+  <select id="{{ id }}" name="{{ name }}" class="ui-select">
+    {{ caller() }}
+  </select>
+{%- endmacro %}
+
+{% macro table_wrap() -%}
+  <div class="ui-table-wrap">
+    <table class="ui-table">
+      {{ caller() }}
+    </table>
+  </div>
+{%- endmacro %}
+

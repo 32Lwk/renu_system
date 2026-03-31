@@ -1,0 +1,21 @@
+{% extends "_layout.html" %}
+{% from "_ui.html" import card, field_label, input %}
+
+{% block title %}メール認証 | ReNU{% endblock %}
+
+{% block content %}
+  {% call card("メールアドレスの確認", "6桁の認証コードを送信します") %}
+    <form method="post" action="/onboarding/email" class="grid gap-3 max-w-md">
+      <div class="ui-field">
+        {{ field_label("email", "メールアドレス") }}
+        {{ input("email", "email", type="email", required=true, placeholder="例: yamada.taro.24@example.com", autocomplete="email") }}
+        <div class="ui-hint">メールが届かない場合は迷惑メールフォルダも確認してください。</div>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button type="submit" class="ui-btn ui-btn-primary">認証コードを送信</button>
+        <a class="ui-btn ui-btn-secondary" href="/">トップへ戻る</a>
+      </div>
+    </form>
+  {% endcall %}
+{% endblock %}
+

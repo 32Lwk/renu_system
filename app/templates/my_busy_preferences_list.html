@@ -1,0 +1,43 @@
+{% extends "_layout.html" %}
+{% from "_ui.html" import card, table_wrap %}
+
+{% block title %}自分の繁忙期希望一覧 | ReNU{% endblock %}
+
+{% block content %}
+  {% call card("登録済みの希望") %}
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <p class="text-sm text-ink-400">自分が登録した繁忙期希望の一覧です。</p>
+      <a class="ui-btn ui-btn-primary" href="/my/busy/preferences">希望を追加</a>
+    </div>
+
+    <div class="mt-4">
+      {% if preferences %}
+        {% call table_wrap() %}
+          <thead>
+            <tr>
+              <th>イベントID</th>
+              <th>希望役割</th>
+              <th>優先度</th>
+              <th>上限シフト数</th>
+              <th>備考</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in preferences %}
+              <tr>
+                <td class="whitespace-nowrap">{{ p.event_id }}</td>
+                <td class="whitespace-nowrap">{{ p.preferred_role }}</td>
+                <td class="whitespace-nowrap">{{ p.priority }}</td>
+                <td class="whitespace-nowrap">{{ p.max_shifts }}</td>
+                <td class="min-w-[12rem] break-words">{{ p.note }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        {% endcall %}
+      {% else %}
+        <p class="text-sm text-ink-300">まだ繁忙期の希望は登録されていません。</p>
+      {% endif %}
+    </div>
+  {% endcall %}
+{% endblock %}
+

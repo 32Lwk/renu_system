@@ -1,0 +1,72 @@
+{% extends "_layout.html" %}
+{% from "_ui.html" import card, field_label, input, select, table_wrap %}
+
+{% block title %}参加者編集 | {{ event.name or event.event_id }} | ReNU{% endblock %}
+
+{% block content %}
+  {% call card("参加者: " ~ (event.name or event.event_id), (event.date ~ " " ~ event.start_time ~ "–" ~ event.end_time)) %}
+    <div class="grid gap-5 lg:grid-cols-2">
+      <div>
+        <h3 class="text-sm font-semibold text-ink-200">登録済み</h3>
+        <div class="mt-3">
+          {% if not attendances %}
+            <p class="text-sm text-ink-300">まだいません。</p>
+          {% else %}
+            {% call table_wrap() %}
+              <thead>
+                <tr>
+                  <th>メンバーID</th>
+                  <th>役割</th>
+                  <th>状態</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for a in attendances %}
+                  <tr>
+                    <td class="whitespace-nowrap">{{ a.member_id }}</td>
+                    <td class="whitespace-nowrap">{{ a.role or "Member" }}</td>
+                    <td class="whitespace-nowrap">{{ a.status or "" }}</td>
+                    <td class="whitespace-nowrap">
+                      <form method="post" action="/my/team/events/{{ event.event_id }}/attendances/{{ a.attendance_id }}/remove" class="inline">
+                        <button type="submit" class="ui-btn ui-btn-ghost">削除</button>
+                      </form>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            {% endcall %}
+          {% endif %}
+        </div>
+      </div>
+
+      <div>
+        <h3 class="text-sm font-semibold text-ink-200">追加（自チームメンバー）</h3>
+        <div class="mt-3">
+          {% if available_members %}
+            <form method="post" action="/my/team/events/{{ event.event_id }}/attendances/add" class="grid gap-3">
+              <div class="ui-field">
+                {{ field_label("member_id", "メンバー") }}
+                {% call select("member_id", "member_id") %}
+                  {% for m in available_members %}
+                    <option value="{{ m.member_id }}">{{ m.full_name or m.member_id }} ({{ m.member_id }})</option>
+                  {% endfor %}
+                {% endcall %}
+              </div>
+              <div class="ui-field">
+                {{ field_label("role", "役割（任意）") }}
+                {{ input("role", "role", value="Member", placeholder="例: 受付") }}
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <button type="submit" class="ui-btn ui-btn-primary">追加</button>
+                <a class="ui-btn ui-btn-secondary" href="/my/team/events">一覧へ</a>
+              </div>
+            </form>
+          {% else %}
+            <p class="text-sm text-ink-300">追加可能なメンバーはいません（全員登録済み、またはチームにメンバーなし）。</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% endcall %}
+{% endblock %}

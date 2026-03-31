@@ -1,0 +1,38 @@
+{% extends "_layout.html" %}
+{% from "_ui.html" import card, table_wrap %}
+
+{% block title %}繁忙期希望の集計 | ReNU 管理{% endblock %}
+
+{% block content %}
+  {% call card("繁忙期希望の集計") %}
+    <p class="text-sm text-ink-300">
+      登録件数（全件）: <span class="font-semibold text-ink-100">{{ total_prefs }}</span>
+    </p>
+    <div class="mt-4">
+      {% if not rows %}
+        <p class="text-sm text-ink-300">希望データがありません。</p>
+      {% else %}
+        {% call table_wrap() %}
+          <thead>
+            <tr>
+              <th>希望数</th>
+              <th>イベント</th>
+              <th>日付</th>
+              <th>event_id</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in rows %}
+              <tr>
+                <td class="whitespace-nowrap">{{ r.count }}</td>
+                <td class="min-w-[14rem]">{{ r.name }}</td>
+                <td class="whitespace-nowrap">{{ r.date }}</td>
+                <td><code class="rounded bg-ink-800/60 px-2 py-0.5 text-ink-200">{{ r.event_id }}</code></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        {% endcall %}
+      {% endif %}
+    </div>
+  {% endcall %}
+{% endblock %}
